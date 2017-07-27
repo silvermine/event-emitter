@@ -1,7 +1,7 @@
 {
   "name": "silvermine-event-emitter",
   "version": "0.9.0",
-  "description": "simple event emitter that is well-tested and solid",
+  "description": "a simple event emitter mixin that is well-tested, solid, and dependency-free",
   "main": "src/index.js",
   "scripts": {
     "test": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -R spec 'tests/**/*.test.js'"
@@ -37,6 +37,7 @@
     "istanbul": "0.4.5",
     "mocha": "3.4.2",
     "mocha-lcov-reporter": "1.3.0",
+    "q": "1.5.0",
     "rewire": "2.5.2",
     "sinon": "2.3.5",
     "underscore": "1.8.3"
