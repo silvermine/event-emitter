@@ -1,5 +1,5 @@
 {
-  "name": "silvermine-event-emitter",
+  "name": "@silvermine/event-emitter",
   "version": "1.0.0",
   "description": "a simple event emitter mixin that is well-tested, solid, and dependency-free",
   "main": "src/index.js",
