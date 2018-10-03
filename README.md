@@ -1,9 +1,9 @@
 # Silvermine Event Emitter
 
-[![Build Status](https://travis-ci.org/silvermine/event-emitter.png?branch=master)](https://travis-ci.org/silvermine/event-emitter)
+[![Build Status](https://travis-ci.org/silvermine/event-emitter.svg?branch=master)](https://travis-ci.org/silvermine/event-emitter)
 [![Coverage Status](https://coveralls.io/repos/github/silvermine/event-emitter/badge.svg?branch=master)](https://coveralls.io/github/silvermine/event-emitter?branch=master)
-[![Dependency Status](https://david-dm.org/silvermine/event-emitter.png)](https://david-dm.org/silvermine/event-emitter)
-[![Dev Dependency Status](https://david-dm.org/silvermine/event-emitter/dev-status.png)](https://david-dm.org/silvermine/event-emitter#info=devDependencies&view=table)
+[![Dependency Status](https://david-dm.org/silvermine/event-emitter.svg)](https://david-dm.org/silvermine/event-emitter)
+[![Dev Dependency Status](https://david-dm.org/silvermine/event-emitter/dev-status.svg)](https://david-dm.org/silvermine/event-emitter#info=devDependencies&view=table)
 
 
 ## What is it?
