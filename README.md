@@ -18,17 +18,17 @@ mixin that we could use in a variety of projects.
 
 The event emitter mixin is a CommonJS module, and will work both in node.js and in the
 browser. For server-side usage, simply use the built-in `require` function to `require
-('silvermine-event-emitter')` and use the mixin. For browser environments, use a CommonJS
+('@silvermine/event-emitter')` and use the mixin. For browser environments, use a CommonJS
 module loader like [Browserify](http://browserify.org/) or
 [Webpack](https://webpack.github.io/).
 
-`silvermine-event-emitter` uses native [Promises][] to make event listener executions
+`@silvermine/event-emitter` uses native [Promises][] to make event listener executions
 asynchronous. Native Promises are available in node.js versions `0.12.18` and up, and in
 [most browsers](http://caniuse.com/#feat=promises) except Internet Explorer. If you need
 to support an environment that does not have native Promise support, you can easily add a
 [Promise polyfill][].
 
-`silvermine-event-emitter` also uses these built-in `Array` methods that are only
+`@silvermine/event-emitter` also uses these built-in `Array` methods that are only
 available in Internet Explorer 9 and up:
 
    * [forEach][]
@@ -39,12 +39,12 @@ available in Internet Explorer 9 and up:
 
 ### Creating an event emitter
 
-The object returned by `require('silvermine-event-emitter')` is designed to be used as a
+The object returned by `require('@silvermine/event-emitter')` is designed to be used as a
 mixin for javascript "classes". Here are a few different ways in which the mixin can be
 used:
 
 ```js
-var EventEmitterMixin = require('silvermine-event-emitter'),
+var EventEmitterMixin = require('@silvermine/event-emitter'),
     MyClass, myInstance;
 
 MyClass = function() {};
@@ -61,7 +61,7 @@ myInstance.emit('hello');
 Alternatively, if you prefer to use objects directly, without classes:
 
 ```js
-var EventEmitterMixin = require('silvermine-event-emitter'),
+var EventEmitterMixin = require('@silvermine/event-emitter'),
     myInstance;
 
 myInstance = Object.create(EventEmitterMixin, {
@@ -77,7 +77,7 @@ class:
 
 ```js
 
-let EventEmitterMixin = require('silvermine-event-emitter');
+let EventEmitterMixin = require('@silvermine/event-emitter');
 
 let MixinEventEmitter = (Base) => {
    Object.assign(Base.prototype, EventEmitterMixin);
