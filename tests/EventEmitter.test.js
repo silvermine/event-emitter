@@ -1,7 +1,7 @@
 'use strict';
 
 var expect = require('expect.js'),
-    EventEmitterMixin = require('../src/index'),
+    EventEmitterMixin = require('../src/index').EventEmitterMixin,
     Class = require('class.extend'),
     sinon = require('sinon'),
     _ = require('underscore'),
