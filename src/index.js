@@ -2,6 +2,7 @@
 
 var find = require('./lib/find'),
     reject = require('./lib/reject'),
+    isArrayOfStrings = require('./lib/is-array-of-strings'),
     EventEmitterMixin;
 
 /**
@@ -15,6 +16,11 @@ var find = require('./lib/find'),
  * later. If you are using {@link EventEmitterMixin#once} or never need to remove the
  * event listener, using `listener.bind(context)` instead of the context parameter is
  * acceptable.
+ *
+ * **WARNING: JavaScript does not allow you to re-bind the `this` context of an arrow
+ * function. If you pass an arrow function as a listener, the `context` parameter will
+ * have no effect.** If you need to re-bind the context, use a `function` statement
+ * instead.
  *
  * It is common to override a listener function's `this` context using the `Function`
  * object's `bind` method. For example:
@@ -102,11 +108,13 @@ EventEmitterMixin = {
     *    time that the event is emitted, and is **not** removed after it has been called
     *    once.
     *
-    * @param eventNames {string} one or more names of the event(s) your listener will be
-    * invoked for, when emitted. Providing a string of space-separated names will bind
-    * the provided listener to each of the events listed.
+    * @param eventNames {string|array} one or more names of the event(s) your listener
+    * will be invoked for, when emitted. Providing an array of names will bind the
+    * provided listener to each of the events listed.
     * @param listener {function} the listener that will be called when this event is
-    * emitted
+    * emitted. **WARNING: JavaScript does not allow you to re-bind
+    * the `this` context of an arrow function. If you pass an arrow function as a
+    * listener, the `context` parameter will have no effect.**
     * @param [context] {object} the object that will be the `this` context for the
     * `listener` function when it is executed. See the documentation on
     * {@link EventEmitterMixin} for an explanation of when and how to use this parameter.
@@ -116,13 +124,13 @@ EventEmitterMixin = {
    on: function(eventNames, listener, context) {
       var eventNamesList;
 
-      if (typeof eventNames !== 'string') {
-         throw new Error('the eventNames parameter must be a string, but was: ' + (typeof eventNames));
+      if (typeof eventNames !== 'string' && !isArrayOfStrings(eventNames)) {
+         throw new Error('the eventNames parameter must be a string or an array of strings, but was: ' + eventNames);
       }
       if (typeof listener !== 'function') {
          throw new Error('the listener parameter must be a function, but was: ' + (typeof listener));
       }
-      eventNamesList = eventNames.split(' ');
+      eventNamesList = Array.isArray(eventNames) ? eventNames : [ eventNames ];
 
       // Remove the event listeners if they already exist. Listeners bound with this `on`
       // function should always override listeners bound with `once`.
@@ -207,7 +215,7 @@ EventEmitterMixin = {
     * var listener = function() {};
     *
     * eventEmitter
-    *    .once('a b c', listener)
+    *    .once([ 'a', 'b', 'c' ], listener)
     *    .on('b', listener)
     *    .emit('b');
     * ```
@@ -243,7 +251,9 @@ EventEmitterMixin = {
     *
     * @param eventName {string} the name of the event your listener will be invoked on.
     * @param listener {function} the listener that will be called the first time this
-    * event is emitted
+    * event is emitted. **WARNING: JavaScript does not allow you to re-bind the `this`
+    * context of an arrow function. If you pass an arrow function as a listener, the
+    * `context` parameter will have no effect.**
     * @param [context] {object} the object that will be the `this` context for the
     * `listener` function when it is executed
     * @instance
@@ -255,10 +265,6 @@ EventEmitterMixin = {
 
       if (typeof eventName !== 'string') {
          throw new Error('the eventName parameter must be a string, but was: ' + (typeof eventName));
-      }
-      if (eventName.indexOf(' ') !== -1) {
-         throw new Error('The eventName parameter cannot contain the name of more than one event and so it '
-            + 'should not contain a space. The eventName parameter was: ' + eventName);
       }
       if (typeof listener !== 'function') {
          throw new Error('the listener parameter must be a function, but was: ' + (typeof listener));
@@ -302,8 +308,8 @@ EventEmitterMixin = {
     * each event name in `eventNames`, only the listener registered with that specific
     * event name, `listener` function, and context will be removed.
     *
-    * @param [eventNames] {string} the name(s) of one or more events. Providing a string
-    * of space-separated names will remove the listeners for each of the events listed.
+    * @param [eventNames] {string|array} the name(s) of one or more events. Providing am
+    * array of event names will remove the listeners for each of the events listed.
     * Omitting this parameter will remove all event listeners from this object.
     * @param [listener] {function} the listener that will be removed. If this parameter
     * is not provided, then **all** event listeners listening to each `eventName` will be
@@ -318,11 +324,15 @@ EventEmitterMixin = {
     * @returns {object} `this` for chaining
     */
    off: function(eventNames, listener, context) {
+      var eventNamesList;
+
       if (!eventNames) {
          this._eventListeners = {};
          return this;
       }
-      eventNames.split(' ').forEach(function(eventName) {
+
+      eventNamesList = Array.isArray(eventNames) ? eventNames : [ eventNames ];
+      eventNamesList.forEach(function(eventName) {
          this._removeEventListener(eventName, listener, context);
       }.bind(this));
 
@@ -369,21 +379,24 @@ EventEmitterMixin = {
    /**
     * Emits an event to any listeners registered for it.
     *
-    * @param eventNames {string} the names of one or more events to emit. Providing a
-    * string of space-separated names will emit each of the events listed.
+    * @param eventNames {string|array} the names of one or more events to emit. Providing
+    * an array of names will emit each of the events listed.
     * @param * {...*} all other arguments will be passed to the event listeners
     * @instance
     * @returns {object} `this` for chaining
     */
    emit: function(eventNames) {
       var args = Array.prototype.slice.apply(arguments),
-          eventArgs = args.slice(1);
+          eventArgs = args.slice(1),
+          eventNamesList;
 
-      if (typeof eventNames !== 'string') {
-         throw new Error('the eventNames parameter must be a string, but was: ' + (typeof eventNames));
+      if (typeof eventNames !== 'string' && !isArrayOfStrings(eventNames)) {
+         throw new Error('the eventNames parameter must be a string or an array of strings, but was: ' + eventNames);
       }
 
-      eventNames.split(' ').forEach(function(eventName) {
+      eventNamesList = Array.isArray(eventNames) ? eventNames : [ eventNames ];
+
+      eventNamesList.forEach(function(eventName) {
          this._emitEvent(eventName, eventArgs);
       }.bind(this));
 
@@ -419,5 +432,6 @@ EventEmitterMixin = {
    },
 
 };
+
 
 module.exports = EventEmitterMixin;
