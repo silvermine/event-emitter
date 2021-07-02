@@ -44,8 +44,8 @@ mixin for javascript "classes". Here are a few different ways in which the mixin
 used:
 
 ```js
-var EventEmitterMixin = require('@silvermine/event-emitter'),
-    MyClass, myInstance;
+const { EventEmitterMixin } = require('@silvermine/event-emitter').EventEmitterMixin,
+      MyClass, myInstance;
 
 MyClass = function() {};
 
@@ -61,7 +61,7 @@ myInstance.emit('hello');
 Alternatively, if you prefer to use objects directly, without classes:
 
 ```js
-var EventEmitterMixin = require('@silvermine/event-emitter'),
+var EventEmitterMixin = require('@silvermine/event-emitter').EventEmitterMixin,
     myInstance;
 
 myInstance = Object.create(EventEmitterMixin, {
@@ -76,8 +76,7 @@ is an example of a mixin function that can be used to add event emitter methods 
 class:
 
 ```js
-
-let EventEmitterMixin = require('@silvermine/event-emitter');
+const { EventEmitterMixin } = require('@silvermine/event-emitter');
 
 let MixinEventEmitter = (Base) => {
    Object.assign(Base.prototype, EventEmitterMixin);
@@ -92,7 +91,6 @@ class MyClass extends MixinEventEmitter(MyBaseClass) {
 
 let myInstance = new MyClass();
 myInstance.emit('started');
-
 ```
 
 ### Basic Usage
@@ -200,13 +198,12 @@ myInstance.emit('started', myInstance, 42);
 #### Binding a listener function to multiple events
 
 You may want to bind one event listener to several event names. You can either bind them
-individually or within a single call to `on` by passing a space-delimited list of event
-names:
+individually or within a single call to `on` by passing an array of event names:
 
 ```js
 function onChange {}
 
-myInstance.on('started stopped paused', onChange);
+myInstance.on([ 'started', 'stopped', 'paused' ], onChange);
 
 // or:
 myInstance.on('started', onChange)
@@ -216,11 +213,11 @@ myInstance.on('started', onChange)
 
 #### Emitting multiple events
 
-You can emit multiple events with a single call to `emit` by passing a space-delimited
-list of event names:
+You can emit multiple events with a single call to `emit` by passing an array of event
+names:
 
 ```js
-myInstance.emit('initialized started played');
+myInstance.emit([ 'initialized', 'started', 'played' ]);
 ```
 
 #### Removing a single listener when multiple listeners are bound to the same event name
@@ -300,6 +297,33 @@ myInstance.off('started', listener2, this);
 
 // or:
 myInstance.off('started'); // removes all listeners bound to 'started'
+```
+
+##### A warning about arrow functions
+
+JavaScript does not allow you to re-bind the `this` context of an arrow function. If you
+pass an arrow function as a listener, the `context` parameter will have no effect. For
+example:
+
+```js
+const outerContext = this;
+
+function registerListeners() {
+   // The `outerContext` parameter will be ignored. The listener will have the `this`
+   // context that `registerListeners` is called with.
+   myInstance.on('started', () => { console.log('Started', this.name); }, outerContext);
+}
+```
+
+If you need to re-bind the context, use a `function` statement instead:
+
+```js
+const outerContext = this;
+
+function registerListeners() {
+   // The listener function will have `outerContext` as its `this` context.
+   myInstance.on('started', function() { console.log('Started', this.name); }, outerContext);
+}
 ```
 
 ## How do I contribute?

@@ -27,6 +27,7 @@
     "url": "https://github.com/silvermine/event-emitter/issues"
   },
   "homepage": "https://github.com/silvermine/event-emitter#readme",
+  "types": "src/types/index.d.ts",
   "devDependencies": {
     "@silvermine/eslint-config": "3.0.1",
     "@silvermine/standardization": "1.0.3",

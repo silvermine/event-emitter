@@ -1,7 +1,7 @@
 'use strict';
 
 var expect = require('expect.js'),
-    EventEmitterMixin = require('../src/index'),
+    EventEmitterMixin = require('../src/index').EventEmitterMixin,
     Class = require('class.extend'),
     sinon = require('sinon'),
     _ = require('underscore'),
@@ -45,7 +45,7 @@ function getTimesFnCalledWithContext(spyFn, context) {
  * this example:
  *
  * ```
- * eventEmitter.on('event1 event2 event3', listener);
+ * eventEmitter.on([ 'event1', 'event2', 'event3' ], listener);
  *
  * eventEmitter.emit('event1');
  * sinon.assert.calledOnce(listener);
@@ -128,7 +128,7 @@ describe('EventEmitter', function() {
          expect(eventEmitter.emit('event1')).to.be(eventEmitter);
       });
 
-      it('throws an error if the eventNames parameter is not a string', function() {
+      it('throws an error if the eventNames parameter is not a string or an array of strings', function() {
          var eventEmitter = new EventEmitter(),
              errorRegex;
 
@@ -137,6 +137,7 @@ describe('EventEmitter', function() {
          expect(eventEmitter.emit.bind(eventEmitter)).to.throwError(errorRegex);
          expect(eventEmitter.emit.bind(eventEmitter, null)).to.throwError(errorRegex);
          expect(eventEmitter.emit.bind(eventEmitter, _.noop)).to.throwError(errorRegex);
+         expect(eventEmitter.emit.bind(eventEmitter, [ '', 1 ])).to.throwError(errorRegex);
       });
 
       it('executes an event listener when the event the listener is bound to is emitted', function() {
@@ -228,7 +229,7 @@ describe('EventEmitter', function() {
          });
       });
 
-      it('executes event listeners for multiple events when the eventNames parameter is a space-delimited list of names', function() {
+      it('executes event listeners for multiple events when the eventNames parameter is an array of names', function() {
          var eventEmitter = new EventEmitter(),
              listener1 = sinon.spy(),
              listener2 = sinon.spy(),
@@ -238,7 +239,7 @@ describe('EventEmitter', function() {
          eventEmitter.on('event2', listener2);
          eventEmitter.on('event3', listener3);
 
-         eventEmitter.emit('event1 event2 event3');
+         eventEmitter.emit([ 'event1', 'event2', 'event3' ]);
 
          return Q.delay(0).then(function() {
             sinon.assert.calledOnce(listener1);
@@ -291,7 +292,7 @@ describe('EventEmitter', function() {
          expect(eventEmitter.on('event1', _.noop)).to.be(eventEmitter);
       });
 
-      it('throws an error if the eventNames parameter is not a string', function() {
+      it('throws an error if the eventNames parameter is not a string or an array of strings', function() {
          var eventEmitter = new EventEmitter(),
              errorRegex;
 
@@ -300,6 +301,7 @@ describe('EventEmitter', function() {
          expect(eventEmitter.on.bind(eventEmitter)).to.throwError(errorRegex);
          expect(eventEmitter.on.bind(eventEmitter, null)).to.throwError(errorRegex);
          expect(eventEmitter.on.bind(eventEmitter, _.noop)).to.throwError(errorRegex);
+         expect(eventEmitter.on.bind(eventEmitter, [ '', 1 ])).to.throwError(errorRegex);
       });
 
       it('throws an error if the listener parameter is not a function', function() {
@@ -313,11 +315,11 @@ describe('EventEmitter', function() {
          expect(eventEmitter.on.bind(eventEmitter, 'event1', true)).to.throwError(errorRegex);
       });
 
-      it('adds event listeners for multiple events when the eventNames parameter is a space-delimited list of names', function() {
+      it('adds event listeners for multiple events when the eventNames parameter is an array of names', function() {
          var eventEmitter = new EventEmitter(),
              listener = sinon.spy();
 
-         eventEmitter.on('event1 event2 event3', listener);
+         eventEmitter.on([ 'event1', 'event2', 'event3' ], listener);
 
          function step1() {
             sinon.assert.calledOnce(listener);
@@ -383,14 +385,6 @@ describe('EventEmitter', function() {
          expect(eventEmitter.once.bind(eventEmitter, _.noop)).to.throwError(errorRegex);
       });
 
-      it('throws an error if the eventName parameter is a space-delimited list of event names', function() {
-         var eventEmitter = new EventEmitter(),
-             errorRegex;
-
-         errorRegex = /.*it should not contain a space.*/;
-         expect(eventEmitter.once.bind(eventEmitter, 'event1 event2')).to.throwError(errorRegex);
-      });
-
       it('throws an error if the listener parameter is not a function', function() {
          var eventEmitter = new EventEmitter(),
              errorRegex;
@@ -449,7 +443,7 @@ describe('EventEmitter', function() {
 
          // Assert that we have a valid test by first ensuring event listeners were
          // registered and called correctly.
-         eventEmitter.emit('event1 event2 event3');
+         eventEmitter.emit([ 'event1', 'event2', 'event3' ]);
          function step1() {
             sinon.assert.calledOnce(listener1);
             sinon.assert.calledOnce(listener2);
@@ -461,7 +455,7 @@ describe('EventEmitter', function() {
 
             // Test #off
             eventEmitter.off();
-            eventEmitter.emit('event1 event2 event3');
+            eventEmitter.emit([ 'event1', 'event2', 'event3' ]);
          }
 
          function step2() {
@@ -567,7 +561,7 @@ describe('EventEmitter', function() {
          return nestFunctions([ step1, step2 ]);
       });
 
-      it('removes event listeners for multiple events when the eventNames parameter is a space-delimited list of names', function() {
+      it('removes event listeners for multiple events when the eventNames parameter is an array of names', function() {
          var eventEmitter = new EventEmitter(),
              listener1 = sinon.spy(),
              listener2 = sinon.spy(),
@@ -579,7 +573,7 @@ describe('EventEmitter', function() {
 
          // Assert that we have a valid test by first ensuring event listeners were
          // registered and called correctly.
-         eventEmitter.emit('event1 event2 event3');
+         eventEmitter.emit([ 'event1', 'event2', 'event3' ]);
          function step1() {
             sinon.assert.calledOnce(listener1);
             sinon.assert.calledOnce(listener2);
@@ -590,8 +584,8 @@ describe('EventEmitter', function() {
             listener3.reset();
 
             // Test #off
-            eventEmitter.off('event1 event2 event3');
-            eventEmitter.emit('event1 event2 event3');
+            eventEmitter.off([ 'event1', 'event2', 'event3' ]);
+            eventEmitter.emit([ 'event1', 'event2', 'event3' ]);
          }
 
          function step2() {
@@ -722,12 +716,12 @@ describe('EventEmitter', function() {
          });
       });
 
-      it('#on overwrites listeners already bound with #once, but not others when given a space-delimited list of events', function() {
+      it('#on overwrites listeners already bound with #once, but not others when given an array of events', function() {
          var eventEmitter = new EventEmitter(),
              listener = sinon.spy();
 
          eventEmitter.once('event2', listener);
-         eventEmitter.on('event1 event2 event3', listener);
+         eventEmitter.on([ 'event1', 'event2', 'event3' ], listener);
 
          // Should only be invoked 3 times. callCount = 3
          eventEmitter.emit('event1');
@@ -749,11 +743,11 @@ describe('EventEmitter', function() {
          });
       });
 
-      it('#once does not overwrite listeners already bound with #on that were bound with a space-delimited list of events', function() {
+      it('#once does not overwrite listeners already bound with #on that were bound with an array of events', function() {
          var eventEmitter = new EventEmitter(),
              listener = sinon.spy();
 
-         eventEmitter.on('event1 event2 event3', listener);
+         eventEmitter.on([ 'event1', 'event2', 'event3' ], listener);
          eventEmitter.once('event2', listener);
 
          // Should only be invoked 3 times. callCount = 3
