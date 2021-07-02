@@ -4,7 +4,7 @@
   "description": "a simple event emitter mixin that is well-tested, solid, and dependency-free",
   "main": "src/index.js",
   "scripts": {
-    "commitlint": "commitlint --from 9f45934",
+    "commitlint": "commitlint --from c798aab",
     "test": "check-node-version --npm 6.14.12 --print && nyc mocha -- 'tests/**/*.test.js'"
   },
   "author": "Jeremy Thomerson",
