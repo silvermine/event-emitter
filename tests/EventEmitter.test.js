@@ -11,7 +11,7 @@ var expect = require('expect.js'),
 /**
  * Helper for getting the number of times a given function has been
  * executed with a given `this` context. This is necessary because
- * EventEmitterMixin#emit does not guarantee that it will execute
+ * IEventEmitter.emit does not guarantee that it will execute
  * handler functions in the same order in which they are registered.
  *
  * @param spyFn {function} the sinon spy function under test
