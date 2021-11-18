@@ -10,11 +10,10 @@ type RestParameters<T> = T extends (...args: infer P) => any ? P : never;
  * e.g. `Object.assign(MyClass.prototype, EventEmitterMixin);`
  *
  * Note: if it is necessary to override a listener function's `this` context, always use
- * the optional `context` parameter on the {@link EventEmitterMixin#on} method to do so
- * if you want to remove that specific listener or listener and context combination
- * later. If you are using {@link EventEmitterMixin#once} or never need to remove the
- * event listener, using `listener.bind(context)` instead of the context parameter is
- * acceptable.
+ * the optional `context` parameter on the {@link IEventEmitter.on} method to do so if you
+ * want to remove that specific listener or listener and context combination later. If you
+ * are using {@link IEventEmitter.once} or never need to remove the event listener, using
+ * `listener.bind(context)` instead of the context parameter is acceptable.
  *
  * It is common to override a listener function's `this` context using the `Function`
  * object's `bind` method. For example:
@@ -56,8 +55,8 @@ type RestParameters<T> = T extends (...args: infer P) => any ? P : never;
  * emitter.on('ready', fn, context);
  * ```
  *
- * Then, to remove that particular listener, call {@link EventEmitterMixin#off} and pass
- * the same event name, function, and context:
+ * Then, to remove that particular listener, call {@link IEventEmitter.off} and pass the
+ * same event name, function, and context:
  *
  * ```
  * emitter.off('ready', fn, context);
@@ -77,16 +76,16 @@ export interface IEventEmitter<EventListeners = Record<string, (...args: any) =>
     * emitted.
     *
     * Calls to `on` will de-duplicate listeners so that the same listener and context
-    * combination does not get invoked more than once for the same event. Also, calls
-    * to `on` override calls to {@link EventEmitterMixin#once} in that if there is still
-    * an event listener and context combination registered from a call to
-    * {@link EventEmitterMixin#once} and the same listener and context combination is
-    * passed to a call to `on`, that listener and context combination will **not** be
-    * removed after the first event.
+    * combination does not get invoked more than once for the same event. Also, calls to
+    * `on` override calls to {@link IEventEmitter.once} in that if there is still an event
+    * listener and context combination registered from a call to
+    * {@link IEventEmitter.once} and the same listener and context combination is passed
+    * to a call to `on`, that listener and context combination will **not** be removed
+    * after the first event.
     *
     * If the `listener` function (or the listener function and its associated `context`)
-    * was already registered using {@link EventEmitterMixin#on} or
-    * {@link EventEmitterMixin#once}, registering it again with `on` will have the
+    * was already registered using {@link IEventEmitter.on} or
+    * {@link IEventEmitter.once}, registering it again with `on` will have the
     * following effect:
     *
     *    * `on`: if it was registered with `on`, nothing happens. There remains one
@@ -104,7 +103,7 @@ export interface IEventEmitter<EventListeners = Record<string, (...args: any) =>
     * an arrow function. If you pass an arrow function as a listener, the `context`
     * parameter will have no effect.**
     * @param [context] - the object that will be the `this` context for the `listener`
-    * function when it is executed. See the documentation on {@link EventEmitterMixin} for
+    * function when it is executed. See the documentation on {@link IEventEmitter} for
     * an explanation of when and how to use this parameter. See the WARNING on `listener`
     * parameter documentation.
     *
@@ -118,11 +117,11 @@ export interface IEventEmitter<EventListeners = Record<string, (...args: any) =>
     * invoked for the first time, it will be discarded.
     *
     * If the `listener` function or the `listener` function and context is already
-    * registered using either {@link EventEmitterMixin#on} or
-    * {@link EventEmitterMixin#once}, this operation essentially has no effect.
+    * registered using either {@link IEventEmitter.on} or {@link IEventEmitter.once}, this
+    * operation essentially has no effect.
     *
-    * Unlike the {@link EventEmitterMixin#on} function, this function can only register
-    * a listener for one `eventName` at a time. This saves us from a large amount of
+    * Unlike the {@link IEventEmitter.on} function, this function can only register a
+    * listener for one `eventName` at a time. This saves us from a large amount of
     * complexity in the EventEmitter API. For example:
     *
     * ```
@@ -198,12 +197,11 @@ export interface IEventEmitter<EventListeners = Record<string, (...args: any) =>
     * @param [listener] - the listener that will be removed. If this parameter
     * is not provided, then **all** event listeners listening to each `eventName` will be
     * removed.
-    * @param [context] - the object that was provided as the `this` context for
-    * the `listener` function when the event listener you are removing was registered.
-    * See the documentation on {@link EventEmitterMixin} for an explanation of when and
-    * how to use this parameter. If this parameter is not provided, then **all** event
-    * listeners listening to each `eventName` using the given `listener` function will be
-    * removed.
+    * @param [context] - the object that was provided as the `this` context for the
+    * `listener` function when the event listener you are removing was registered. See the
+    * documentation on {@link IEventEmitter} for an explanation of when and how to use
+    * this parameter. If this parameter is not provided, then **all** event listeners
+    * listening to each `eventName` using the given `listener` function will be removed.
     * @instance
     * @returns `this` for chaining
     */

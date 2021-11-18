@@ -58,8 +58,8 @@ EventEmitterMixin = {
     * @param [callback=`listener`] {function} the function that will be called directly
     * when the `eventName` event is emitted. This allows us to call a different listener
     * function internally (such as the wrapper function that
-    * {@link EventEmitterMixin#once} uses to remove itself after executing once) as a
-    * wrapper around `listener`.
+    * {@link IEventEmitter.once} uses to remove itself after executing once) as a wrapper
+    * around `listener`.
     * @instance
     * @private
     */
